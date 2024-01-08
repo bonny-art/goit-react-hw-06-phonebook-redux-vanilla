@@ -1,12 +1,8 @@
-// import { LS_KEY } from 'constants';
+import { LS_KEY } from 'constants';
 import { ADD_CONTACT, DELETE_CONTACT, SET_CONTACTS } from './types';
 
-// const initialState = {
-//   contacts: JSON.parse(localStorage.get(LS_KEY)) || [],
-// };
-
 const initialState = {
-  contacts: [],
+  contacts: JSON.parse(localStorage.getItem(LS_KEY)) || [],
 };
 
 export const contactsReducer = (state = initialState, action) => {
