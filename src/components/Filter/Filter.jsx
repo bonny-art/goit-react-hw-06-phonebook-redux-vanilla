@@ -1,8 +1,17 @@
 import React from 'react';
 
 import { FilterSection, FormField, FormInput } from './Filter.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeFilterAction } from 'store/filter/actions';
 
-export const Filter = ({ value, onChange }) => {
+export const Filter = () => {
+  const filter = useSelector(store => store.filter.filter);
+  const dispatch = useDispatch();
+
+  const changeFilter = e => {
+    dispatch(changeFilterAction(e.target.value));
+  };
+
   return (
     <FilterSection>
       <FormField>
@@ -11,8 +20,8 @@ export const Filter = ({ value, onChange }) => {
           type="text"
           name="name"
           placeholder="Start printing name here"
-          value={value}
-          onChange={onChange}
+          value={filter}
+          onChange={changeFilter}
         />
       </FormField>
     </FilterSection>

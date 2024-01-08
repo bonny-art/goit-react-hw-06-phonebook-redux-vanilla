@@ -1,70 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import React, { useEffect } from 'react';
 
 import { PhoneInputForm, ContactsList, Filter } from 'components';
 import { Section, Header, Title } from './Section/Section.styled';
+import { useSelector } from 'react-redux';
+import { LS_KEY } from 'constants';
 
-const LS_KEY = 'phone_contacts';
+// const LS_KEY = 'phone_contacts';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-  const [isOpened, setIsOpened] = useState(false);
+  // const [contacts, setContacts] = useState(() => {
+  //   return JSON.parse(localStorage.get(LS_KEY)) || [];
+  // });
+  // const [filter, setFilter] = useState('');
 
-  const addContact = ({ name, number }) => {
-    const contact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-
-    const isExist = contacts.find(({ name }) => name === contact.name.trim());
-
-    if (isExist) {
-      Notify.failure(`${contact.name} is already in contacts.`);
-      return;
-    }
-
-    return setContacts(prev => [contact, ...prev]);
-  };
+  const contacts = useSelector(state => state.contacts.contacts);
 
   useEffect(() => {
-    setIsOpened(true);
-    const storedContacts = JSON.parse(localStorage.getItem(LS_KEY));
+    localStorage.setItem(LS_KEY, JSON.stringify(contacts));
+  }, [contacts]);
 
-    if (storedContacts) {
-      setContacts(storedContacts);
-    }
-  }, []);
-
-  useEffect(() => {
-    isOpened && localStorage.setItem(LS_KEY, JSON.stringify(contacts));
-  }, [contacts, isOpened]);
-
-  const deleteContact = contactId => {
-    setContacts(prev => prev.filter(({ id }) => contactId !== id));
-  };
-
-  const changeFilter = e => {
-    setFilter(e.currentTarget.value);
-  };
-
-  const normalizedFilter = filter.toLowerCase();
-  const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter)
-  );
+  // useEffect(() => {
+  //   const storedContacts = JSON.parse(localStorage.getItem(LS_KEY));
+  //   if (storedContacts) {
+  //     dispatch({ type: 'SET_CONTACTS', payload: storedContacts });
+  //     // setContacts(storedContacts);
+  //   }
+  // }, []);
 
   return (
     <Section>
       <Header>Phonebook</Header>
-      <PhoneInputForm onSubmit={addContact} />
+      <PhoneInputForm />
       <Title>Contacts</Title>
-      <Filter onChange={changeFilter} value={filter} />
-      <ContactsList
-        contacts={visibleContacts}
-        onDeleteContact={deleteContact}
-      />
+      <Filter />
+      <ContactsList />
     </Section>
   );
 };

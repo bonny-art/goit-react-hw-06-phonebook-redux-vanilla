@@ -1,6 +1,8 @@
 import React from 'react';
 import { Formik, ErrorMessage } from 'formik';
 import * as yup from 'yup';
+import { nanoid } from 'nanoid';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import {
   InputFormContainer,
@@ -9,6 +11,8 @@ import {
   FormButton,
   ErrorMessageStyled,
 } from './PhoneInputForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContactAction } from 'store/contacts/actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -31,9 +35,29 @@ const schema = yup.object().shape({
     .required('Phone number is required'),
 });
 
-export const PhoneInputForm = ({ onSubmit }) => {
+export const PhoneInputForm = () => {
+  const contacts = useSelector(state => state.contacts.contacts);
+  const dispatch = useDispatch();
+
+  const addContact = ({ name, number }) => {
+    const contact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+
+    const isExist = contacts.find(({ name }) => name === contact.name.trim());
+
+    if (isExist) {
+      Notify.failure(`${contact.name} is already in contacts.`);
+      return;
+    }
+
+    dispatch(addContactAction(contact));
+  };
+
   const handleSubmit = (values, { resetForm }) => {
-    onSubmit({ ...values });
+    addContact({ ...values });
     resetForm();
   };
 
